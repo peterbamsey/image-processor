@@ -24,14 +24,14 @@ build:
 	docker build -t terraform-local -f Dockerfile.Terraform .
 
 tf-init: init
-	docker run -i -t -w /workspace -v $(TF_SRC):$(TF_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+	docker run -i -t -w $(TF_DST) -v $(TF_SRC):$(TF_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
 		terraform-local:latest init \
 		-backend-config "bucket=$(AWS_STATE_BUCKET)" \
 		-backend-config "key=environments/test/terraform.tfstate" \
 		$(TF_DST)
 
 tf-format: tf-init
-	docker run -i -t -w /workspace -v $(TF_SRC):$(TF_DST) \
+	docker run -i -t -w $(TF_DST) -v $(TF_SRC):$(TF_DST) \
 		terraform-local:latest \
 		fmt -recursive $(TF_DST)
 
@@ -42,7 +42,7 @@ tf-validate: tf-format
 		$(TF_DST)
 
 tf-plan: tf-validate
-		docker run -i -t -w /workspace -v $(TF_SRC):$(TF_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+		docker run -i -t -w $(TF_DST) -v $(TF_SRC):$(TF_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
 			terraform-local:latest \
  			plan \
 			-refresh=true \
@@ -54,7 +54,7 @@ tf-plan: tf-validate
 			$(TF_DST)
 
 tf-apply: tf-plan
-		docker run -i -t -w /workspace -v $(TF_SRC):$(TF_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+		docker run -i -t -w $(TF_DST) -v $(TF_SRC):$(TF_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
 			terraform-local:latest \
  			apply \
 			-refresh=true \
@@ -71,12 +71,12 @@ tf-state-bucket-init:
 	docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY --rm -it amazon/aws-cli --region $(AWS_REGION) s3api put-bucket-versioning --bucket $(AWS_STATE_BUCKET) --versioning-configuration Status=Enabled
 
 test-upload:
-	docker run -w /workspace -v $(PROJECT_ROOT):$(TEST_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY --rm -it amazon/aws-cli s3 cp $(TEST_IMAGE_UPLOAD_PATH)$(TEST_IMAGE) s3://$(IMAGE_UPLOAD_BUCKET)/$(TEST_IMAGE)
+	docker run -w $(TF_DST) -v $(PROJECT_ROOT):$(TEST_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY --rm -it amazon/aws-cli s3 cp $(TEST_IMAGE_UPLOAD_PATH)$(TEST_IMAGE) s3://$(IMAGE_UPLOAD_BUCKET)/$(TEST_IMAGE)
 
 test-download:
 	echo "Wating for file..."
 	sleep 15
-	docker run -w /workspace -v $(PROJECT_ROOT):$(TEST_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY --rm -it amazon/aws-cli s3 cp s3://$(AWS_IMAGE_BUCKET_B)/$(TEST_IMAGE) $(TEST_IMAGE_DOWNLOAD_PATH)$(TEST_IMAGE)
+	docker run -w $(TF_DST) -v $(PROJECT_ROOT):$(TEST_DST) -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY --rm -it amazon/aws-cli s3 cp s3://$(AWS_IMAGE_BUCKET_B)/$(TEST_IMAGE) $(TEST_IMAGE_DOWNLOAD_PATH)$(TEST_IMAGE)
 	if identify -verbose $(PROJECT_ROOT)/tests/results/$(TEST_IMAGE) | grep -i exif; then echo "Exif data found in test file: FAIL"; else echo "No Exif data found in test file: SUCCESS!"; fi
 
 test-all: test-upload test-download

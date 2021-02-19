@@ -3,3 +3,5 @@ infra/.terraform*
 infra/modules/lambda/*.zip
 infra/modules/lambda/*.stats
 tests/results/*
+infra/modules/lambda/build
+infra/modules/lambda/*.zip

@@ -11,6 +11,9 @@ The Lambda function is subscribed to the upload bucket and received a notificati
 The project contains a Makefile to simplify deployment. Infrastructure configuration is managed by Terraform, launch via a Docker container.
 
 ### Initial setup
+Update the variables at the top of the Makefile to match your desired setup.
+<br>
+
 Export your AWS Access and Secret Access key in your shell:
 <br>
 `export AWS_ACCESS_KEY_ID=AKIADSFGSF234WRE; export AWS_SECRET_ACCESS_KEY=SAdfoksdfpija093jla`
@@ -18,6 +21,7 @@ Export your AWS Access and Secret Access key in your shell:
 Setup the S3 bucket used by Terraform to hold the state file:
 <br>
 `make state-bucket-init`
+
 
 Deploy the infrastructure including the Lambda function:
 <br>
@@ -27,7 +31,7 @@ Test the processor by uploading a test JPEG file:
 <br>
 `make test-upload`
 
-Test the processed image no longer contais exif data:
+Test the processed image no longer contains exif data:
 <br>
 `make test-download`
 
