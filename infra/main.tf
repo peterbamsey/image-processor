@@ -25,10 +25,31 @@ module "lambda" {
 }
 
 module "s3-to-lambda" {
-  source        = "./modules/s3-to-lambda"
+  source = "./modules/s3-to-lambda"
+
   lambda-arn    = module.lambda.lambda-arn
   s3-bucket-arn = module.bucket-a.s3-bucket-arn
   s3-bucket-id  = module.bucket-a.s3-bucket-id
+}
+
+module "user-a" {
+  source = "./modules/iam-user"
+
+  iam-actions      = ["s3:Listbucket", "s3:PutObject", "s3:GetObject"]
+  iam-effect       = "Allow"
+  resource-arns    = ["${module.bucket-a.s3-bucket-arn}/*", module.bucket-a.s3-bucket-arn]
+  user-name        = "user-a"
+  user-policy-name = "user-a"
+}
+
+module "user-b" {
+  source = "./modules/iam-user"
+
+  iam-actions      = ["s3:List*", "s3:Get*"]
+  iam-effect       = "Allow"
+  resource-arns    = ["${module.bucket-b.s3-bucket-arn}/*", module.bucket-b.s3-bucket-arn]
+  user-name        = "user-b"
+  user-policy-name = "user-b"
 }
 
 data "aws_caller_identity" "id" {}

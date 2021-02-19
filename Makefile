@@ -16,7 +16,6 @@ TEST_IMAGE_DOWNLOAD_PATH=$(TEST_DST)/tests/results/
 TEST_IMAGE=test.jpg
 IMAGE_UPLOAD_BUCKET=bamsey-net-image-processor-a
 
-
 init: build
 	sudo rm -rf $(TF_SRC)/{.terraform,modules/lambda/build/} && sudo rm -f $(TF_SRC)/.terraform.lock.hcl
 
