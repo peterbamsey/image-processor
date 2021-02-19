@@ -3,6 +3,7 @@ This project is an example of event driven image processing using AWS S3 buckets
 
 ## What does it do
 ![Diagram](/diagram/diagram.jpg)
+<br>
 The project contains two S3 buckets, one for file upload and one for post processing storage and one Lambda function to perform the image manipulation - which in this case is stipping EXIF data from the image.
 <br><br>
 The Lambda function is subscribed to the upload bucket and received a notification event when a new file arrives.  The Lambda gets the S3 bucket name and file key from the event and removes the EXIF data by opening the file with the Pillow library and saving it to the destination S3.
