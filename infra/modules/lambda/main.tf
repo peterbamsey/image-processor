@@ -17,6 +17,12 @@ resource "aws_lambda_function" "lambda" {
   runtime          = local.lambda-runtime
   source_code_hash = data.archive_file.zip-file.output_base64sha256
   timeout          = local.lambda-timeout
+
+  environment {
+    variables = {
+      DESTINATION_BUCKET_ID = var.destination-bucket-id
+    }
+  }
 }
 
 resource "null_resource" "pip" {
@@ -74,7 +80,22 @@ resource "aws_iam_role_policy" "policy" {
         ],
         Effect   = "Allow",
         Resource = "arn:aws:logs:${var.region}:${var.account-id}:*"
-      }
+      },
+      {
+        Action = [
+          "s3:Listbucket",
+          "s3:GetObject"
+        ],
+        Effect   = "Allow",
+        Resource = ["${var.source-bucket-arn}/*"]
+      },
+      {
+        Action = [
+          "s3:PutObject"
+        ],
+        Effect   = "Allow",
+        Resource = ["${var.destination-bucket-arn}/*"]
+      },
     ]
   })
 }

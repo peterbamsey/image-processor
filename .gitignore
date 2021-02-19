@@ -1,2 +1,5 @@
 .idea/
 infra/.terraform*
+infra/modules/lambda/*.zip
+infra/modules/lambda/*.stats
+tests/results/*
