@@ -4,14 +4,14 @@ This project is an example of event driven image processing using AWS S3 buckets
 ## What does it do
 ![Diagram](/diagram/diagram.jpg)
 <br>
-The project contains two S3 buckets, one for file upload and one for post processing storage and one Lambda function to perform the image manipulation - which in this case is stipping EXIF data from the image.
+The project contains two S3 buckets, one for file upload and one for post processing storage, and one Lambda function to perform the image manipulation - which in this case is stripping Exif data from the image.
 <br><br>
-The Lambda function is subscribed to the upload bucket and received a notification event when a new file arrives.  The Lambda gets the S3 bucket name and file key from the event and removes the EXIF data by opening the file with the Pillow library and saving it to the destination S3.
+The Lambda function is subscribed to the upload bucket and receives a notification event when a new file arrives.  The Lambda function gets the source S3 bucket name and file key from the event and removes the Exif data by opening the file with the Pillow library and saving it to the destination S3 bucket.
 <br><br>
-The project also creates two users.  user-a who can read and write bucket-a and user-b who can only read bucket-b
+The project also creates two users.  user-a who can read and write bucket-a and user-b who can only read bucket-b.
 
 ## Deploying
-The project contains a Makefile to simplify deployment. Infrastructure configuration is managed by Terraform, launch via a Docker container.
+The project contains a Makefile to simplify deployment. Infrastructure configuration is managed by Terraform, launched via a Docker container.
 
 ### Initial setup
 Update the variables at the top of the Makefile to match your desired setup.
@@ -33,7 +33,7 @@ Test the processor by uploading a test JPEG file:
 <br>
 `make test-upload`
 
-Test the processed image no longer contains exif data:
+Test the processed image no longer contains Exif data:
 <br>
 `make test-download`
 
@@ -41,7 +41,7 @@ Test the processed image no longer contains exif data:
 ## Prerequisites
 * docker
 * make
-* imagemagick for testing for EXIF data (apt-get install imagemagick)
+* imagemagick for testing for Exif data (apt-get install imagemagick)
 
 ## Known Issues
-Exporting AWS credentials in your shell is bad practice
+Exporting AWS credentials in your shell is bad practice.
